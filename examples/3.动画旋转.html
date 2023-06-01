@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - exporter - draco</title>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+		/>
+	</head>
+	<body>
+		<!-- <div id="info"></div> -->
+
+		<!-- Import maps polyfill -->
+		<!-- Remove this when import maps will be widely supported -->
+		<script
+			async
+			src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"
+		></script>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+		<script type="module">
+			import * as THREE from "three";
+			import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+			// 创建3D场景对象Scene
+			const scene = new THREE.Scene();
+
+			//物体形状
+			const geometry = new THREE.BoxGeometry(100, 100, 100);
+
+			//材质
+			const material = new THREE.MeshLambertMaterial({
+				color: 0x007584,
+				transparent: true, //开启透明
+				opacity: 1,
+			});
+
+			//创建模型
+			const mesh = new THREE.Mesh(geometry, material);
+
+			//模型位置
+			mesh.position.set(0, 10, 0);
+
+			//添加到三维屏幕中
+			scene.add(mesh);
+
+			//创建坐标
+			const axesHelper = new THREE.AxesHelper(150);
+			scene.add(axesHelper);
+
+			//创建点光源
+			const pointLight = new THREE.PointLight(0xffffff, 10);
+			pointLight.position.set(100, 100, 0); //点光源放在x轴上
+			scene.add(pointLight); //点光源添加到场景中
+
+			//可视化点光源
+			const ponitLightHelper = new THREE.PointLightHelper(pointLight, 10);
+			scene.add(ponitLightHelper);
+
+			//环境光:没有特定方向，整体改变场景的光照明暗
+			const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+			scene.add(ambient);
+
+			// 平行光
+			const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+			// 设置光源的方向：通过光源position属性和目标指向对象的position属性计算
+			directionalLight.position.set(80, 0, 0);
+			// 方向光指向对象网格模型mesh，可以不设置，默认的位置是0,0,0
+			directionalLight.target = mesh;
+			scene.add(directionalLight);
+
+			// DirectionalLightHelper：可视化平行光
+			const dirLightHelper = new THREE.DirectionalLightHelper(
+				directionalLight,
+				5,
+				0xff0000
+			);
+			scene.add(dirLightHelper);
+
+			//相机
+			// 30:视场角度, width / height:Canvas画布宽高比, 1:近裁截面, 3000：远裁截面
+			//定义相机输出的画布尺寸
+			const width = 800;
+			const height = 500;
+			const camera = new THREE.PerspectiveCamera(30, width / height, 1, 3000);
+			camera.position.set(200, 200, 200);
+
+			//相机对准物体位置
+			camera.lookAt(mesh.position);
+
+			// 创建渲染器对象
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize(width, height); //设置three.js渲染区域的尺寸(像素px)
+
+			renderer.render(scene, camera); //执行渲染操作
+			// 设置相机控件轨道控制器OrbitControls
+			const controls = new OrbitControls(camera, renderer.domElement);
+			// 如果OrbitControls改变了相机参数，重新调用渲染器渲染三维场景
+			controls.addEventListener("change", function () {
+				renderer.render(scene, camera); //执行渲染操作
+			}); //监听鼠标、键盘事件
+
+			document.body.appendChild(renderer.domElement);
+
+
+
+			//周期性执行动画
+		</script>
+	</body>
+</html>

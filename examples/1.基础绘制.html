@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - exporter - draco</title>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+		/>
+	</head>
+	<body>
+		<!-- <div id="info"></div> -->
+
+		<!-- Import maps polyfill -->
+		<!-- Remove this when import maps will be widely supported -->
+		<script
+			async
+			src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"
+		></script>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+		<script type="module">
+			import * as THREE from "three";
+
+			// 创建3D场景对象Scene
+			const scene = new THREE.Scene();
+
+			//物体形状
+			const geometry = new THREE.BoxGeometry(100, 100, 100);
+
+			//材质
+			const material = new THREE.MeshBasicMaterial({
+				color: 0xff0000,
+				transparent: true, //开启透明
+				opacity: 0.5,
+			});
+
+			//创建模型
+			const mesh = new THREE.Mesh(geometry, material);
+
+			//模型位置
+			mesh.position.set(0, 10, 0);
+
+			//添加到三维屏幕中
+			scene.add(mesh);
+			const axesHelper = new THREE.AxesHelper(150);
+			scene.add(axesHelper);
+			//相机
+			// 30:视场角度, width / height:Canvas画布宽高比, 1:近裁截面, 3000：远裁截面
+			//定义相机输出的画布尺寸
+			const width = 800;
+			const height = 500;
+			const camera = new THREE.PerspectiveCamera(30, width / height, 1, 3000);
+			camera.position.set(200, 200, 200);
+
+			//相机对准物体位置
+			camera.lookAt(mesh.position);
+
+			// 创建渲染器对象
+			const renderer = new THREE.WebGLRenderer();
+
+			renderer.setSize(width, height); //设置three.js渲染区域的尺寸(像素px)
+			renderer.render(scene, camera); //执行渲染操作
+
+			document.body.appendChild(renderer.domElement);
+		</script>
+	</body>
+</html>
