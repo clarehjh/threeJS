@@ -102,6 +102,7 @@
 			renderer.setSize(width, height); //设置three.js渲染区域的尺寸(像素px)
 
 			renderer.render(scene, camera); //执行渲染操作
+
 			// 设置相机控件轨道控制器OrbitControls
 			const controls = new OrbitControls(camera, renderer.domElement);
 			// 如果OrbitControls改变了相机参数，重新调用渲染器渲染三维场景
@@ -111,9 +112,26 @@
 
 			document.body.appendChild(renderer.domElement);
 
+			//*********************动画渲染*************************//
 
+			/**
+			 * 周期性执行动画，渲染循环
+			 **/
 
-			//周期性执行动画
+			//计算渲染时间间隔和帧率
+			const clock = new THREE.clock();
+
+			
+			function render() {
+				const spt = clock.getDelta() * 1000;
+				console.log("两帧渲染时间间隔（毫秒）", spt);
+				console.log("帧率fps", 1000 / spt);
+				mesh.rotateY(0.1); //旋转
+				renderer.render(scene, camera); //周期性执行相机渲染，更新canvas上的内容
+				requestAnimationFrame(render);
+			}
+
+			render();
 		</script>
 	</body>
 </html>
